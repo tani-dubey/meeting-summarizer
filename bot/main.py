@@ -218,7 +218,6 @@ async def start_meeting(interaction: discord.Interaction):
             return
         
         try:
-            # voice_client = await voice_channel.connect()
             voice_client = await voice_channel.connect(
                 cls = voice_recv.VoiceRecvClient
             )
