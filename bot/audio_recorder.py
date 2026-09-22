@@ -6,11 +6,15 @@ from pathlib import Path
 from typing import Dict, Optional
 import logging
 
+from discord.ext import voice_recv
+
 logger = logging.getLogger(__name__)
 
 
-class AudioSink:
+class AudioSink(voice_recv.AudioSink):
     def __init__(self, meeting_id: str, output_dir: str = "recordings"):
+        super().__init__()
+        
         self.meeting_id = meeting_id
         self.output_dir = Path(output_dir)
         self.meeting_dir = self.output_dir / meeting_id
@@ -23,9 +27,12 @@ class AudioSink:
         
         logger.info(f"AudioSink initialized for meeting {meeting_id}")
     
+    def wants_opus(self):
+        return False
+    
     def write(self, user, data):
-        if not data:
-            return
+        if user is None or not data.pcm:
+            return 
         
         with self._lock:
             user_id = user.id if hasattr(user, 'id') else user
@@ -96,17 +103,11 @@ class AudioRecordingManager:
         try:
             sink = AudioSink(meeting_id, self.recordings_dir)
             
-            if hasattr(voice_client, 'listen'):
-                voice_client.listen(discord.UserFilter(sink))
-            elif hasattr(voice_client, 'start_recording'):
-                voice_client.start_recording(
-                    sink,
-                    self._recording_callback,
-                    self._recording_error_callback
-                )
-            else:
-                return (False, "Voice client doesn't support recording")
-            
+            voice_client.listen(
+                sink,
+                after = self._recording_error_callback
+            )
+
             self._active_recorders[guild_id] = sink
             logger.info(f"Started recording for guild {guild_id}, meeting {meeting_id}")
             return (True, None)
