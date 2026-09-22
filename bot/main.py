@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 from meeting_state import MeetingStateManager, MeetingStatus
 from audio_recorder import AudioRecordingManager
 
+from discord.ext import voice_recv
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -216,7 +218,11 @@ async def start_meeting(interaction: discord.Interaction):
             return
         
         try:
-            voice_client = await voice_channel.connect()
+            # voice_client = await voice_channel.connect()
+            voice_client = await voice_channel.connect(
+                cls = voice_recv.VoiceRecvClient
+            )
+            
             logger.info(f"Connected to voice channel {voice_channel.id} in guild {guild_id}")
         except discord.ClientException as e:
             voice_client = interaction.guild.voice_client
