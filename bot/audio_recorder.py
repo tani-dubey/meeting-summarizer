@@ -43,7 +43,7 @@ class AudioSink(voice_recv.AudioSink):
             
             try:
                 writer = self._user_writers[user_id]
-                writer.writeframes(data)
+                writer.writeframes(data.pcm)
             except Exception as e:
                 logger.error(f"Error writing audio for user {user_id}: {e}")
     
@@ -147,5 +147,8 @@ class AudioRecordingManager:
     def _recording_callback(self, sink: AudioSink, channel):
         logger.info(f"Recording callback triggered for meeting {sink.meeting_id}")
     
-    def _recording_error_callback(self, sink: AudioSink, exc: Exception):
-        logger.error(f"Recording error for meeting {sink.meeting_id}: {exc}")
+    def _recording_error_callback(self, exc: Exception):
+        if exc is None:
+            logger.info("Recording listener stopped normally")
+            return 
+        logger.error(f"Recording error : {exc!r}", exc_info=True)

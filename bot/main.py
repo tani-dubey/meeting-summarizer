@@ -138,7 +138,9 @@ class MeetingBot(commands.Bot):
                     await asyncio.sleep(delay)
                 
                 # Attempt to reconnect
-                voice_client = await voice_channel.connect()
+                voice_client = await voice_channel.connect(
+                    cls=voice_recv.VoiceRecvClient
+                )
                 logger.info(f"Successfully reconnected to voice channel {voice_channel.id} in guild {guild_id}")
                 
                 # Resume audio recording
