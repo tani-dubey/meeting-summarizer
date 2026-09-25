@@ -13,7 +13,7 @@ __pycache__/
 venv/
 env/
 ENV/
-.venv
+.venv/
 
 # Recordings (large files)
 recordings/

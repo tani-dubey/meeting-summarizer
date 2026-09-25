@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from discord.ext import commands,voice_recv
+from discord.ext import commands, voice_recv
 import logging
 import os
 import sys
@@ -137,7 +137,7 @@ class MeetingBot(commands.Bot):
                 
                 # Attempt to reconnect
                 voice_client = await voice_channel.connect(
-                    cls= voice_recv.VoiceRecvClient
+                    cls=voice_recv.VoiceRecvClient
                 )
                 logger.info(f"Successfully reconnected to voice channel {voice_channel.id} in guild {guild_id}")
                 
@@ -219,7 +219,7 @@ async def start_meeting(interaction: discord.Interaction):
         
         try:
             voice_client = await voice_channel.connect(
-                cls= voice_recv.VoiceRecvClient
+                cls=voice_recv.VoiceRecvClient
             )
             logger.info(f"Connected to voice channel {voice_channel.id} in guild {guild_id}")
         except discord.ClientException as e:
